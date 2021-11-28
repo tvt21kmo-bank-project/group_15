@@ -31,7 +31,7 @@ CREATE TABLE `asiakas` (
   `Puhelin` varchar(15) DEFAULT NULL,
   PRIMARY KEY (`idAsiakas`),
   UNIQUE KEY `Hetu_UNIQUE` (`Hetu`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -53,7 +53,7 @@ CREATE TABLE `kortti` (
   KEY `fk_Kortti_Tili1_idx` (`idTili`),
   CONSTRAINT `fk_Kortti_Asiakas` FOREIGN KEY (`idAsiakas`) REFERENCES `asiakas` (`idAsiakas`),
   CONSTRAINT `fk_Kortti_Tili1` FOREIGN KEY (`idTili`) REFERENCES `tili` (`idTili`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -69,7 +69,7 @@ CREATE TABLE `tili` (
   `Saldo` double NOT NULL,
   PRIMARY KEY (`idTili`),
   UNIQUE KEY `Tilinumero_UNIQUE` (`Tilinumero`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -89,8 +89,72 @@ CREATE TABLE `tilitapahtuma` (
   PRIMARY KEY (`idTapahtuma`),
   KEY `fk_Tilitapahtuma_Tili1_idx` (`idTili`),
   CONSTRAINT `fk_Tilitapahtuma_Tili1` FOREIGN KEY (`idTili`) REFERENCES `tili` (`idTili`)
-) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping routines for database 'bankautomat'
+--
+/*!50003 DROP PROCEDURE IF EXISTS `debit_nosto` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `debit_nosto`(
+IN maara DOUBLE,
+IN kortti VARCHAR(20))
+BEGIN
+DECLARE testi INT DEFAULT 0;
+DECLARE tili INT DEFAULT NULL;
+SELECT Tili.idTili INTO tili FROM Tili
+	JOIN Kortti ON Tili.idTili=Kortti.idTili 
+    WHERE kortinnumero=kortti;
+START TRANSACTION;
+UPDATE Tili SET saldo=saldo-maara WHERE idTili=tili AND saldo>=maara;
+SET testi=ROW_COUNT();
+IF (testi > 0) THEN
+	COMMIT;
+    INSERT INTO Tilitapahtuma(Kortinnumero,Aika,Tapahtuma,Summa,idTili) VALUES(kortti,NOW(),'nosto',maara,tili);
+ELSE
+	ROLLBACK;
+END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `selaa_tapahtumia` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `selaa_tapahtumia`(
+IN edel_viim INT,
+IN kortti VARCHAR(20))
+BEGIN
+DECLARE tili INT DEFAULT NULL;
+SELECT Tili.idTili INTO tili FROM Tili
+	JOIN Kortti ON Tili.idTili=Kortti.idTili 
+    WHERE kortinnumero=kortti;
+SELECT kortinnumero, aika, tapahtuma, summa FROM Tilitapahtuma WHERE idTili=tili 
+	ORDER BY idTapahtuma DESC LIMIT edel_viim, 10;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -101,4 +165,4 @@ CREATE TABLE `tilitapahtuma` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-11-21 22:56:06
+-- Dump completed on 2021-11-28 12:33:05

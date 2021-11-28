@@ -6,10 +6,17 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    objValikko = new Valikko;
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+
+void MainWindow::on_btn_ok_clicked()
+{
+    objValikko->show();
 }
 
