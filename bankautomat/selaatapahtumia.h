@@ -42,7 +42,7 @@ private:
     int ed_viim = 0;
     QString kortti;
     QString site_url="http://localhost:3000/bank/";
-    QString credentials="user:password";
+    QString credentials="user:password";  // tietokannan tunnus ja salasana
 };
 
 #endif // SELAATAPAHTUMIA_H

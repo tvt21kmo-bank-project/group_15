@@ -12,16 +12,22 @@ CONFIG += c++11
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
+    muusumma.cpp \
+    nostarahaa.cpp \
     selaatapahtumia.cpp \
     valikko.cpp
 
 HEADERS += \
     mainwindow.h \
+    muusumma.h \
+    nostarahaa.h \
     selaatapahtumia.h \
     valikko.h
 
 FORMS += \
     mainwindow.ui \
+    muusumma.ui \
+    nostarahaa.ui \
     selaatapahtumia.ui \
     valikko.ui
 

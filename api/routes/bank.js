@@ -33,5 +33,15 @@ router.get('/nayta_saldo/:kortti', function(req,res) {
         }
     })
 });
+router.post('/debit_nosto', function(req, res) {
+    pankki.debitNosto(req.body, function(err, dbResult) {
+        if(err) {
+            res.json(err);
+        }
+        else {
+            res.json(dbResult.affectedRows);
+        }
+    })
+})
 
 module.exports = router;

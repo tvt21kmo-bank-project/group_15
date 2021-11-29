@@ -14,6 +14,9 @@ const pankki = {
         return db.query(
             'SELECT saldo FROM Tili JOIN Kortti ON Tili.idTili=Kortti.idTili WHERE kortinnumero=?', 
             [kortti], cb);
+    },
+    debitNosto: function(data, cb) {
+        return db.query('call debit_nosto(?,?)', [data.maara, data.kortti], cb);
     }
 }
 
