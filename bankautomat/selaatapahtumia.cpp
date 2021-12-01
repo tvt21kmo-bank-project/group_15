@@ -1,9 +1,13 @@
 #include "selaatapahtumia.h"
 #include "ui_selaatapahtumia.h"
 
-SelaaTapahtumia::SelaaTapahtumia(QWidget *parent) :
+SelaaTapahtumia::SelaaTapahtumia(QWidget *parent, QString asiakas, QString tilinumero, QString site_url, QString credentials) :
     QDialog(parent),
-    ui(new Ui::SelaaTapahtumia)
+    ui(new Ui::SelaaTapahtumia),
+    asiakas(asiakas),
+    tilinumero(tilinumero),
+    site_url(site_url),
+    credentials(credentials)
 {
     ui->setupUi(this);
 }
@@ -17,48 +21,33 @@ void SelaaTapahtumia::haeTapahtumat()
 {
     QString edel_viim = QString::number(ed_viim);
 
-    QNetworkRequest tapahtumaRequest((site_url +"selaa_tapahtumia/"+edel_viim+"&"+kortti));
-    tapahtumaRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QNetworkRequest request((site_url +"selaa_tapahtumia/"+edel_viim+"&"+tilinumero));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     QByteArray data = credentials.toLocal8Bit().toBase64();
     QString headerData = "Basic " + data;
-    tapahtumaRequest.setRawHeader( "Authorization", headerData.toLocal8Bit() );
+    request.setRawHeader( "Authorization", headerData.toLocal8Bit() );
     tapahtumaManager = new QNetworkAccessManager(this);
 
     connect(tapahtumaManager, SIGNAL(finished (QNetworkReply*)),
     this, SLOT(getTapahtumaSlot(QNetworkReply*)));
 
-    reply = tapahtumaManager->get(tapahtumaRequest);
+    reply = tapahtumaManager->get(request);
     ed_viim = ed_viim + 10;
-}
-
-void SelaaTapahtumia::haeAsiakas()
-{
-    QNetworkRequest asiakasRequest((site_url +"hae_asiakas/"+kortti));
-    asiakasRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    QByteArray data = credentials.toLocal8Bit().toBase64();
-    QString headerData = "Basic " + data;
-    asiakasRequest.setRawHeader( "Authorization", headerData.toLocal8Bit() );
-    asiakasManager = new QNetworkAccessManager(this);
-
-    connect(asiakasManager, SIGNAL(finished (QNetworkReply*)),
-    this, SLOT(getAsiakasSlot(QNetworkReply*)));
-
-    reply = asiakasManager->get(asiakasRequest);
 }
 
 void SelaaTapahtumia::haeSaldo()
 {
-    QNetworkRequest saldoRequest((site_url +"nayta_saldo/"+kortti));
-    saldoRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QNetworkRequest request((site_url +"nayta_saldo/"+tilinumero));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     QByteArray data = credentials.toLocal8Bit().toBase64();
     QString headerData = "Basic " + data;
-    saldoRequest.setRawHeader( "Authorization", headerData.toLocal8Bit() );
+    request.setRawHeader( "Authorization", headerData.toLocal8Bit() );
     saldoManager = new QNetworkAccessManager(this);
 
     connect(saldoManager, SIGNAL(finished (QNetworkReply*)),
     this, SLOT(getSaldoSlot(QNetworkReply*)));
 
-    reply = saldoManager->get(saldoRequest);
+    reply = saldoManager->get(request);
 }
 
 void SelaaTapahtumia::nayta()
@@ -89,19 +78,6 @@ void SelaaTapahtumia::on_btn_uud_clicked()
     }
     tapahtuma = "";
     haeTapahtumat();
-}
-
-void SelaaTapahtumia::getAsiakasSlot(QNetworkReply *reply)
-{
-    QByteArray response_data=reply->readAll();
-    QJsonDocument json_doc = QJsonDocument::fromJson(response_data);
-    QJsonObject json_obj = json_doc.object();
-
-    asiakas = json_obj["etunimi"].toString()+" "+json_obj["sukunimi"].toString();
-
-    reply->deleteLater();
-    asiakasManager->deleteLater();
-    nayta();
 }
 
 void SelaaTapahtumia::getTapahtumaSlot(QNetworkReply *reply)

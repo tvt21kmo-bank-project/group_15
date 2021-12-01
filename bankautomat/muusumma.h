@@ -16,7 +16,7 @@ class MuuSumma : public QDialog
     Q_OBJECT
 
 public:
-    explicit MuuSumma(QWidget *parent = nullptr,  QString kortti= NULL, QString site_url=NULL, QString credentials=NULL);
+    explicit MuuSumma(QWidget *parent = nullptr,  QString kortti= NULL, QString tilinumero = NULL, QString site_url=NULL, QString credentials=NULL);
     ~MuuSumma();
     void sendData();
 
@@ -32,6 +32,7 @@ private:
     QNetworkReply *reply;
     QString maara;
     QString kortti;
+    QString tilinumero;
     QString site_url;
     QString credentials;
     QMessageBox *msgBox;

@@ -2,13 +2,12 @@ const express = require('express');
 const router = express.Router();
 const pankki = require('../models/bank_model');
 
-router.get('/selaa_tapahtumia/:edel_viim&:kortti', function(req, res) {
-    pankki.selaaTapahtumia(req.params.edel_viim, req.params.kortti, 
-        function(err, dbResult){
+router.get('/hae_tili/:kortti', function (req,res){
+    pankki.haeTili(req.params.kortti, function(err, dbResult) {
         if(err){
             res.json(err);
         }
-        else {
+        else{
             res.json(dbResult[0]);
         }
     })
@@ -23,8 +22,19 @@ router.get('/hae_asiakas/:kortti', function(req, res){
         }
     })
 });
-router.get('/nayta_saldo/:kortti', function(req,res) {
-    pankki.naytaSaldo(req.params.kortti, function(err, dbResult){
+router.get('/selaa_tapahtumia/:edel_viim&:tili', function(req, res) {
+    pankki.selaaTapahtumia(req.params.edel_viim, req.params.tili, 
+        function(err, dbResult){
+        if(err){
+            res.json(err);
+        }
+        else {
+            res.json(dbResult[0]);
+        }
+    })
+});
+router.get('/nayta_saldo/:tili', function(req,res) {
+    pankki.naytaSaldo(req.params.tili, function(err, dbResult){
         if(err) {
             res.json(err);
         }

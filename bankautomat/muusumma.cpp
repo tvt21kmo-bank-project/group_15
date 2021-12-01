@@ -1,10 +1,11 @@
 #include "muusumma.h"
 #include "ui_muusumma.h"
 
-MuuSumma::MuuSumma(QWidget *parent, QString kortti, QString site_url, QString credentials) :
+MuuSumma::MuuSumma(QWidget *parent, QString kortti, QString tilinumero, QString site_url, QString credentials) :
     QDialog(parent),
     ui(new Ui::MuuSumma),
     kortti(kortti),
+    tilinumero(tilinumero),
     site_url(site_url),
     credentials(credentials)
 {
@@ -50,6 +51,7 @@ void MuuSumma::sendData()
     QJsonObject json; //luodaan JSON objekti ja lisätään data
     json.insert("maara",maara);
     json.insert("kortti",kortti);
+    json.insert("tili",tilinumero);
 
     QNetworkRequest request((site_url + "debit_nosto"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");

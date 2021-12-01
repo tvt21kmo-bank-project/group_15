@@ -18,6 +18,7 @@ public:
     explicit Valikko(QWidget *parent = nullptr);
     ~Valikko();
     void haeAsiakas();
+    void haeTili();
     void nayta();
 
 
@@ -26,6 +27,7 @@ private slots:
     void on_btn_nostaRahaa_clicked();
 
     void getAsiakasSlot (QNetworkReply *reply);
+    void getTiliSlot (QNetworkReply *reply);
 
 private:
     Ui::Valikko *ui;
@@ -34,12 +36,13 @@ private:
     NostaRahaa *objNosta;
 
     QNetworkAccessManager *asiakasManager;
+    QNetworkAccessManager *tiliManager;
     QNetworkReply *reply;
     QString asiakas;
-    QString kortti;
+    QString kortti;    //login -ikkunasta, laita testatessa jokin tietokannasta löytyvä kortinnumero
     QString tilinumero;
     QString site_url="http://localhost:3000/bank/";
-    QString credentials="user:password";                   //tietokannan tunnus ja salasana
+    QString credentials="user:password";                   //tietokannan reittien tunnus ja salasana
 };
 
 #endif // VALIKKO_H

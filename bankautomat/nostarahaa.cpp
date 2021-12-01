@@ -1,11 +1,12 @@
 #include "nostarahaa.h"
 #include "ui_nostarahaa.h"
 
-NostaRahaa::NostaRahaa(QWidget *parent, QString asiakas, QString kortti, QString site_url, QString credentials) :
+NostaRahaa::NostaRahaa(QWidget *parent, QString asiakas, QString kortti, QString tilinumero, QString site_url, QString credentials) :
     QDialog(parent),
     ui(new Ui::NostaRahaa),
     asiakas(asiakas),
     kortti(kortti),
+    tilinumero(tilinumero),
     site_url(site_url),
     credentials(credentials)
 {
@@ -23,6 +24,7 @@ void NostaRahaa::sendData()
     QJsonObject json; //luodaan JSON objekti ja lisätään data
     json.insert("maara",maara);
     json.insert("kortti",kortti);
+    json.insert("tili",tilinumero);
 
     QNetworkRequest request((site_url + "debit_nosto"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -96,7 +98,7 @@ void NostaRahaa::on_btn_500_clicked()
 
 void NostaRahaa::on_btn_muuSumma_clicked()
 {
-    objMuuSumma = new MuuSumma(nullptr, kortti, site_url, credentials);
+    objMuuSumma = new MuuSumma(nullptr, kortti, tilinumero, site_url, credentials);
     objMuuSumma->show();
 }
 
@@ -113,17 +115,17 @@ void NostaRahaa::nayta()
 
 void NostaRahaa::haeSaldo()
 {
-    QNetworkRequest saldoRequest((site_url +"nayta_saldo/"+kortti));
-    saldoRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QNetworkRequest request((site_url +"nayta_saldo/"+tilinumero));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     QByteArray data = credentials.toLocal8Bit().toBase64();
     QString headerData = "Basic " + data;
-    saldoRequest.setRawHeader( "Authorization", headerData.toLocal8Bit() );
+    request.setRawHeader( "Authorization", headerData.toLocal8Bit() );
     saldoManager = new QNetworkAccessManager(this);
 
     connect(saldoManager, SIGNAL(finished (QNetworkReply*)),
     this, SLOT(getSaldoSlot(QNetworkReply*)));
 
-    reply = saldoManager->get(saldoRequest);
+    reply = saldoManager->get(request);
 }
 void NostaRahaa::getSaldoSlot(QNetworkReply *reply)
 {

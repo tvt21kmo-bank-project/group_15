@@ -15,10 +15,10 @@ class SelaaTapahtumia : public QDialog
     Q_OBJECT
 
 public:
-    explicit SelaaTapahtumia(QWidget *parent = nullptr);
+    explicit SelaaTapahtumia(QWidget *parent = nullptr, QString asiakas = NULL, QString tilinumero = NULL,
+                             QString site_url=NULL, QString credentials=NULL);
     ~SelaaTapahtumia();
     void haeTapahtumat();
-    void haeAsiakas();
     void haeSaldo();
     void nayta();
 
@@ -26,7 +26,6 @@ private slots:
     void on_btn_close_clicked();
     void on_btn_vanh_clicked();
     void on_btn_uud_clicked();
-    void getAsiakasSlot (QNetworkReply *reply);
     void getTapahtumaSlot(QNetworkReply *reply);
     void getSaldoSlot(QNetworkReply *reply);
 
@@ -37,12 +36,12 @@ private:
     QNetworkAccessManager *saldoManager;
     QNetworkReply *reply;
     QString asiakas;
+    QString tilinumero;
     QString tapahtuma;
     QString saldo;
     int ed_viim = 0;
-    QString kortti;
-    QString site_url="http://localhost:3000/bank/";
-    QString credentials="user:password";  // tietokannan tunnus ja salasana
+    QString site_url;
+    QString credentials;
 };
 
 #endif // SELAATAPAHTUMIA_H

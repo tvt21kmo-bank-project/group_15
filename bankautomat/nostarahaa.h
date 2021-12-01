@@ -18,18 +18,16 @@ class NostaRahaa : public QDialog
     Q_OBJECT
 
 public:
-    explicit NostaRahaa(QWidget *parent = nullptr, QString asiakas = NULL, QString kortti= NULL, QString site_url=NULL,
-                        QString credentials=NULL);
+    explicit NostaRahaa(QWidget *parent = nullptr, QString asiakas = NULL, QString kortti= NULL, QString tilinumero = NULL,
+                        QString site_url=NULL, QString credentials=NULL);
     ~NostaRahaa();
     void sendData();
-//    void haeAsiakas();
     void haeSaldo();
     void nayta();
 
 
 private slots:
     void debitSlot(QNetworkReply *reply);
-//    void getAsiakasSlot (QNetworkReply *reply);
     void getSaldoSlot(QNetworkReply *reply);
     void on_btn_20_clicked();
     void on_btn_40_clicked();
@@ -44,13 +42,13 @@ private:
     Ui::NostaRahaa *ui;
     MuuSumma *objMuuSumma;
     QNetworkAccessManager *debitManager;
-//    QNetworkAccessManager *asiakasManager;
     QNetworkAccessManager *saldoManager;
     QNetworkReply *reply;
     QString maara;
     QString asiakas;
     QString saldo;
     QString kortti;
+    QString tilinumero;
     QString site_url;
     QString credentials;
     QMessageBox *msgBox;

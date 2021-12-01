@@ -89,7 +89,7 @@ CREATE TABLE `tilitapahtuma` (
   PRIMARY KEY (`idTapahtuma`),
   KEY `fk_Tilitapahtuma_Tili1_idx` (`idTili`),
   CONSTRAINT `fk_Tilitapahtuma_Tili1` FOREIGN KEY (`idTili`) REFERENCES `tili` (`idTili`)
-) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=136 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -107,19 +107,18 @@ CREATE TABLE `tilitapahtuma` (
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `debit_nosto`(
 IN maara DOUBLE,
-IN kortti VARCHAR(20))
+IN kortti VARCHAR(20),
+IN tili VARCHAR(18))
 BEGIN
 DECLARE testi INT DEFAULT 0;
-DECLARE tili INT DEFAULT NULL;
-SELECT Tili.idTili INTO tili FROM Tili
-	JOIN Kortti ON Tili.idTili=Kortti.idTili 
-    WHERE kortinnumero=kortti;
+DECLARE tili_id INT DEFAULT 0;
+SELECT idTili INTO tili_id FROM Tili WHERE tilinumero=tili;
 START TRANSACTION;
-UPDATE Tili SET saldo=saldo-maara WHERE idTili=tili AND saldo>=maara;
+UPDATE Tili SET saldo=saldo-maara WHERE tilinumero=tili AND saldo>=maara;
 SET testi=ROW_COUNT();
 IF (testi > 0) THEN
 	COMMIT;
-    INSERT INTO Tilitapahtuma(Kortinnumero,Aika,Tapahtuma,Summa,idTili) VALUES(kortti,NOW(),'nosto',maara,tili);
+    INSERT INTO Tilitapahtuma(Kortinnumero,Aika,Tapahtuma,Summa,idTili) VALUES(kortti,NOW(),'nosto',maara,tili_id);
 ELSE
 	ROLLBACK;
 END IF;
@@ -141,13 +140,11 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `selaa_tapahtumia`(
 IN edel_viim INT,
-IN kortti VARCHAR(20))
+IN tili VARCHAR(18))
 BEGIN
-DECLARE tili INT DEFAULT NULL;
-SELECT Tili.idTili INTO tili FROM Tili
-	JOIN Kortti ON Tili.idTili=Kortti.idTili 
-    WHERE kortinnumero=kortti;
-SELECT kortinnumero, aika, tapahtuma, summa FROM Tilitapahtuma WHERE idTili=tili 
+DECLARE tili_id INT DEFAULT 0;
+SELECT idTili INTO tili_id FROM Tili WHERE tilinumero=tili;
+SELECT kortinnumero, aika, tapahtuma, summa FROM Tilitapahtuma WHERE idTili=tili_id 
 	ORDER BY idTapahtuma DESC LIMIT edel_viim, 10;
 END ;;
 DELIMITER ;
@@ -165,4 +162,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-11-28 12:33:05
+-- Dump completed on 2021-12-01 10:57:37

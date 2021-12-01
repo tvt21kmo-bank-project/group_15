@@ -19,5 +19,6 @@ void MainWindow::on_btn_ok_clicked()
 {
     objValikko->show();
     objValikko->haeAsiakas();
+    objValikko->haeTili();
 }
 
