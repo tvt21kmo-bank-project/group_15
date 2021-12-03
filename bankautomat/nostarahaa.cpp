@@ -17,6 +17,8 @@ NostaRahaa::~NostaRahaa()
 {
     delete ui;
     ui = nullptr;
+
+    objMuuSumma = nullptr;
 }
 
 void NostaRahaa::sendData()
@@ -99,7 +101,9 @@ void NostaRahaa::on_btn_500_clicked()
 void NostaRahaa::on_btn_muuSumma_clicked()
 {
     objMuuSumma = new MuuSumma(nullptr, kortti, tilinumero, site_url, credentials);
+    objMuuSumma->setAttribute(Qt::WA_DeleteOnClose);
     objMuuSumma->show();
+    close();
 }
 
 void NostaRahaa::on_btn_close_clicked()

@@ -42,8 +42,6 @@ void Valikko::getTiliSlot(QNetworkReply *reply)
 
     tilinumero = json_obj["tilinumero"].toString();
 
-    qDebug() << tilinumero;
-
     reply->deleteLater();
     tiliManager->deleteLater();
 
@@ -71,8 +69,6 @@ void Valikko::getAsiakasSlot(QNetworkReply *reply)
     QJsonObject json_obj = json_doc.object();
 
     asiakas = json_obj["etunimi"].toString()+" "+json_obj["sukunimi"].toString();
-
-    qDebug() << asiakas;
 
     reply->deleteLater();
     asiakasManager->deleteLater();

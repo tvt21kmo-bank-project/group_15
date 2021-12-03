@@ -155,7 +155,7 @@
   <widget class="QLabel" name="label_asiakas">
    <property name="geometry">
     <rect>
-     <x>290</x>
+     <x>310</x>
      <y>40</y>
      <width>321</width>
      <height>41</height>
@@ -163,7 +163,7 @@
    </property>
    <property name="font">
     <font>
-     <pointsize>19</pointsize>
+     <pointsize>20</pointsize>
     </font>
    </property>
    <property name="text">
@@ -188,7 +188,7 @@
     <string>Valitse nostettava summa, ole hyvä</string>
    </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>321</x>

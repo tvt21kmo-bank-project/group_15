@@ -16,6 +16,8 @@ MuuSumma::~MuuSumma()
 {
     delete ui;
     ui = nullptr;
+
+    msgBox=nullptr;
 }
 
 void MuuSumma::on_btn_ok_clicked()
@@ -95,5 +97,51 @@ void MuuSumma::debitSlot(QNetworkReply *reply)
 void MuuSumma::on_btn_close_clicked()
 {
     close();
+}
+void MuuSumma::on_btn_1_clicked()
+{
+    ui->le_muuSumma->setText(ui->le_muuSumma->text()+"1");
+}
+void MuuSumma::on_btn_2_clicked()
+{
+    ui->le_muuSumma->setText(ui->le_muuSumma->text()+"2");
+}
+void MuuSumma::on_btn_3_clicked()
+{
+    ui->le_muuSumma->setText(ui->le_muuSumma->text()+"3");
+}
+void MuuSumma::on_btn_4_clicked()
+{
+    ui->le_muuSumma->setText(ui->le_muuSumma->text()+"4");
+}
+void MuuSumma::on_btn_5_clicked()
+{
+    ui->le_muuSumma->setText(ui->le_muuSumma->text()+"5");
+}
+void MuuSumma::on_btn_6_clicked()
+{
+    ui->le_muuSumma->setText(ui->le_muuSumma->text()+"6");
+}
+void MuuSumma::on_btn_7_clicked()
+{
+    ui->le_muuSumma->setText(ui->le_muuSumma->text()+"7");
+}
+void MuuSumma::on_btn_8_clicked()
+{
+    ui->le_muuSumma->setText(ui->le_muuSumma->text()+"8");
+}
+void MuuSumma::on_btn_9_clicked()
+{
+    ui->le_muuSumma->setText(ui->le_muuSumma->text()+"9");
+}
+void MuuSumma::on_btn_0_clicked()
+{
+    ui->le_muuSumma->setText(ui->le_muuSumma->text()+"0");
+}
+void MuuSumma::on_btn_clear_clicked()
+{
+    maara = ui->le_muuSumma->text();
+    maara.chop(1);
+    ui->le_muuSumma->setText(maara);
 }
 

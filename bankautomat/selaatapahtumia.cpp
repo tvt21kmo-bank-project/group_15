@@ -88,8 +88,9 @@ void SelaaTapahtumia::getTapahtumaSlot(QNetworkReply *reply)
     for (const auto &it : json_array) {
     QJsonObject json_obj = it.toObject();
     QString json_aika = json_obj["aika"].toString();
-    QDateTime dateTime = QDateTime::fromString(json_aika, "yyyy-MM-ddThh:mm:ss.zzzZ");
-    tapahtuma += dateTime.toString("dd-MM-yyyy hh:mm:ss")+"     -     "+json_obj["kortinnumero"].toString()+"        -        "
+    QDateTime dt = QDateTime::fromString(json_aika, "yyyy-MM-ddThh:mm:ss.zzzZ");
+
+    tapahtuma += dt.toString("dd-MM-yyyy hh:mm:ss")+"     -     "+json_obj["kortinnumero"].toString()+"        -        "
                  +QString::number(json_obj["summa"].toDouble())+"         -         "+json_obj["tapahtuma"].toString()+"\r";
     }
     reply->deleteLater();
