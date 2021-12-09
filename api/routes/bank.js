@@ -52,6 +52,26 @@ router.post('/debit_nosto', function(req, res) {
             res.json(dbResult.affectedRows);
         }
     })
-})
+});
+router.get('/hae_5_tapahtumaa/:tili', function(req,res) {
+    pankki.hae5tapahtumaa(req.params.tili, function(err, dbResult){
+        if (err) {
+            res.json(err);
+        }
+        else {
+            res.json(dbResult);
+        }
+    })
+});
+router.put('/lukitse_kortti', function(req, res) {
+    pankki.lukitseKortti(req.body, function(err, dbResult){
+        if(err) {
+            res.json(err);
+        }
+        else {
+            res.json(dbResult.affectedRows);
+        }
+    })
+});
 
 module.exports = router;

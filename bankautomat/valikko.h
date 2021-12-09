@@ -1,8 +1,11 @@
 #ifndef VALIKKO_H
 #define VALIKKO_H
 
+#include "datab.h"
+
 #include "selaatapahtumia.h"
 #include "nostarahaa.h"
+#include "naytasaldo.h"
 
 #include <QDialog>
 
@@ -15,34 +18,32 @@ class Valikko : public QDialog
     Q_OBJECT
 
 public:
-    explicit Valikko(QWidget *parent = nullptr);
+    explicit Valikko(QWidget *parent = nullptr, QString kortti = NULL);
     ~Valikko();
-    void haeAsiakas();
-    void haeTili();
-    void nayta();
 
+public slots:
+    void starttaaTimeri();
+    void sulujeppasuluje();
+    void nayta();
 
 private slots:
     void on_btn_tapahtumat_clicked();
     void on_btn_nostaRahaa_clicked();
-
-    void getAsiakasSlot (QNetworkReply *reply);
-    void getTiliSlot (QNetworkReply *reply);
+    void on_btn_saldo_clicked();
+    void on_btn_logout_clicked();
 
 private:
     Ui::Valikko *ui;
 
+    QTimer *timer30;
+    Datab *objDatab;
     SelaaTapahtumia *objSelaa;
     NostaRahaa *objNosta;
+    NaytaSaldo *objSaldo;
 
-    QNetworkAccessManager *asiakasManager;
-    QNetworkAccessManager *tiliManager;
-    QNetworkReply *reply;
     QString asiakas;
-    QString kortti;    //login -ikkunasta, laita testatessa jokin tietokannasta löytyvä kortinnumero
+    QString kortti;
     QString tilinumero;
-    QString site_url="http://localhost:3000/bank/";
-    QString credentials="user:password";                   //tietokannan reittien tunnus ja salasana
 };
 
 #endif // VALIKKO_H

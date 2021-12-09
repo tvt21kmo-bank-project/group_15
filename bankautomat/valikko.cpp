@@ -1,93 +1,79 @@
 #include "valikko.h"
 #include "ui_valikko.h"
 
-Valikko::Valikko(QWidget *parent) :
+Valikko::Valikko(QWidget *parent, QString kortti) :
     QDialog(parent),
-    ui(new Ui::Valikko)
+    ui(new Ui::Valikko),
+    kortti(kortti)
 {
     ui->setupUi(this);
+
+    objDatab = new Datab();
+    objDatab->haeAsiakas(kortti);
+    connect(objDatab, SIGNAL(AsiakasValmis()), this, SLOT(nayta()));
+
+    objDatab->haeTili(kortti);
+
+    timer30 = new QTimer(this);
+    connect(timer30, SIGNAL(timeout()), this, SLOT(sulujeppasuluje()));
+    starttaaTimeri();
 }
 
 Valikko::~Valikko()
 {
     delete ui;
     ui=nullptr;
+
+    delete objDatab;
+    objDatab = nullptr;
+    qDebug() << "Kirjauduttu ulos";
 }
 
 void Valikko::nayta()
 {
-    ui->label_asiakas->setText(asiakas);
+    ui->label_asiakas->setText(objDatab->palautaAsiakas());
 }
 
-void Valikko::haeTili()
+void Valikko::starttaaTimeri()
 {
-    QNetworkRequest request((site_url +"hae_tili/" + kortti));
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    QByteArray data = credentials.toLocal8Bit().toBase64();
-    QString headerData = "Basic " + data;
-    request.setRawHeader( "Authorization", headerData.toLocal8Bit() );
-    tiliManager = new QNetworkAccessManager(this);
-
-    connect(tiliManager, SIGNAL(finished (QNetworkReply*)),
-    this, SLOT(getTiliSlot(QNetworkReply*)));
-
-    reply = tiliManager->get(request);
+    timer30->start(30000);
 }
 
-void Valikko::getTiliSlot(QNetworkReply *reply)
+void Valikko::sulujeppasuluje()
 {
-    QByteArray response_data=reply->readAll();
-    QJsonDocument json_doc = QJsonDocument::fromJson(response_data);
-    QJsonObject json_obj = json_doc.object();
-
-    tilinumero = json_obj["tilinumero"].toString();
-
-    reply->deleteLater();
-    tiliManager->deleteLater();
-
-}
-
-void Valikko::haeAsiakas()
-{
-    QNetworkRequest request((site_url +"hae_asiakas/"+kortti));
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    QByteArray data = credentials.toLocal8Bit().toBase64();
-    QString headerData = "Basic " + data;
-    request.setRawHeader( "Authorization", headerData.toLocal8Bit() );
-    asiakasManager = new QNetworkAccessManager(this);
-
-    connect(asiakasManager, SIGNAL(finished (QNetworkReply*)),
-    this, SLOT(getAsiakasSlot(QNetworkReply*)));
-
-    reply = asiakasManager->get(request);
-}
-
-void Valikko::getAsiakasSlot(QNetworkReply *reply)
-{
-    QByteArray response_data=reply->readAll();
-    QJsonDocument json_doc = QJsonDocument::fromJson(response_data);
-    QJsonObject json_obj = json_doc.object();
-
-    asiakas = json_obj["etunimi"].toString()+" "+json_obj["sukunimi"].toString();
-
-    reply->deleteLater();
-    asiakasManager->deleteLater();
-    nayta();
+    this->close();
 }
 
 void Valikko::on_btn_tapahtumat_clicked()
 {
-    objSelaa = new SelaaTapahtumia(nullptr, asiakas, tilinumero, site_url, credentials);
+    timer30->stop();
+    objSelaa = new SelaaTapahtumia(nullptr, objDatab);
+    objSelaa->setAttribute(Qt::WA_DeleteOnClose);
     objSelaa->show();
-    objSelaa->haeTapahtumat();
-    objSelaa->haeSaldo();
+//    objSelaa->haeTapahtumat();
+//    objSelaa->haeSaldo();
 }
 
 
 void Valikko::on_btn_nostaRahaa_clicked()
 {
-    objNosta = new NostaRahaa(nullptr, asiakas, kortti, tilinumero, site_url, credentials);
+    timer30->stop();
+    objNosta = new NostaRahaa(nullptr, objDatab);
+    objNosta->setAttribute(Qt::WA_DeleteOnClose);
     objNosta->show();
-    objNosta->haeSaldo();
+    connect(objNosta, SIGNAL(suljettuOn()), this, SLOT(starttaaTimeri()));
+}
+
+void Valikko::on_btn_saldo_clicked()
+{
+    timer30->stop();
+    objSaldo = new NaytaSaldo(nullptr, objDatab);
+    objSaldo->setAttribute(Qt::WA_DeleteOnClose);
+    objSaldo->show();
+}
+
+void Valikko::on_btn_logout_clicked()
+{
+    close();
 }
 

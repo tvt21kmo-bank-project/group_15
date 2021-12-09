@@ -1,60 +1,33 @@
 #include "selaatapahtumia.h"
 #include "ui_selaatapahtumia.h"
 
-SelaaTapahtumia::SelaaTapahtumia(QWidget *parent, QString asiakas, QString tilinumero, QString site_url, QString credentials) :
+SelaaTapahtumia::SelaaTapahtumia(QWidget *parent, Datab *objDatab) :
     QDialog(parent),
     ui(new Ui::SelaaTapahtumia),
-    asiakas(asiakas),
-    tilinumero(tilinumero),
-    site_url(site_url),
-    credentials(credentials)
+    objDatab(objDatab)
 {
     ui->setupUi(this);
+
+    objDatab->haeTapahtumat(ed_viim);
+    connect(objDatab, SIGNAL(TapahValmis()), this, SLOT(nayta()));
+
+    objDatab->haeSaldo();
+    connect(objDatab, SIGNAL(SaldoValmis()), this, SLOT(nayta()));
 }
 
 SelaaTapahtumia::~SelaaTapahtumia()
 {
     delete ui;
-}
+    ui=nullptr;
 
-void SelaaTapahtumia::haeTapahtumat()
-{
-    QString edel_viim = QString::number(ed_viim);
-
-    QNetworkRequest request((site_url +"selaa_tapahtumia/"+edel_viim+"&"+tilinumero));
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    QByteArray data = credentials.toLocal8Bit().toBase64();
-    QString headerData = "Basic " + data;
-    request.setRawHeader( "Authorization", headerData.toLocal8Bit() );
-    tapahtumaManager = new QNetworkAccessManager(this);
-
-    connect(tapahtumaManager, SIGNAL(finished (QNetworkReply*)),
-    this, SLOT(getTapahtumaSlot(QNetworkReply*)));
-
-    reply = tapahtumaManager->get(request);
-    ed_viim = ed_viim + 10;
-}
-
-void SelaaTapahtumia::haeSaldo()
-{
-    QNetworkRequest request((site_url +"nayta_saldo/"+tilinumero));
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    QByteArray data = credentials.toLocal8Bit().toBase64();
-    QString headerData = "Basic " + data;
-    request.setRawHeader( "Authorization", headerData.toLocal8Bit() );
-    saldoManager = new QNetworkAccessManager(this);
-
-    connect(saldoManager, SIGNAL(finished (QNetworkReply*)),
-    this, SLOT(getSaldoSlot(QNetworkReply*)));
-
-    reply = saldoManager->get(request);
+    qDebug() << "SelaaTapahtumia tuhottu";
 }
 
 void SelaaTapahtumia::nayta()
 {
-    ui->label_asiakas->setText(asiakas);
-    ui->te_tapahtumat->setText(tapahtuma);
-    ui->label_saldo->setText(saldo);
+    ui->label_asiakas->setText(objDatab->palautaAsiakas());
+    ui->te_tapahtumat->setText(objDatab->palautaTapah());
+    ui->label_saldo->setText(objDatab->palautaSaldo());
 }
 
 void SelaaTapahtumia::on_btn_close_clicked()
@@ -62,13 +35,11 @@ void SelaaTapahtumia::on_btn_close_clicked()
     close();
 }
 
-
 void SelaaTapahtumia::on_btn_vanh_clicked()
 {
-    tapahtuma = "";
-    haeTapahtumat();
+    ed_viim = ed_viim + 10;
+    objDatab->haeTapahtumat(ed_viim);
 }
-
 
 void SelaaTapahtumia::on_btn_uud_clicked()
 {
@@ -76,38 +47,5 @@ void SelaaTapahtumia::on_btn_uud_clicked()
     if (ed_viim < 0){
         ed_viim = 0;
     }
-    tapahtuma = "";
-    haeTapahtumat();
+    objDatab->haeTapahtumat(ed_viim);
 }
-
-void SelaaTapahtumia::getTapahtumaSlot(QNetworkReply *reply)
-{
-    QByteArray response_data=reply->readAll();
-    QJsonDocument json_doc = QJsonDocument::fromJson(response_data);
-    QJsonArray json_array = json_doc.array();
-    for (const auto &it : json_array) {
-    QJsonObject json_obj = it.toObject();
-    QString json_aika = json_obj["aika"].toString();
-    QDateTime dt = QDateTime::fromString(json_aika, "yyyy-MM-ddThh:mm:ss.zzzZ");
-
-    tapahtuma += dt.toString("dd-MM-yyyy hh:mm:ss")+"     -     "+json_obj["kortinnumero"].toString()+"        -        "
-                 +QString::number(json_obj["summa"].toDouble())+"         -         "+json_obj["tapahtuma"].toString()+"\r";
-    }
-    reply->deleteLater();
-    tapahtumaManager->deleteLater();
-    nayta();
-}
-
-void SelaaTapahtumia::getSaldoSlot(QNetworkReply *reply)
-{
-    QByteArray response_data=reply->readAll();
-    QJsonDocument json_doc = QJsonDocument::fromJson(response_data);
-    QJsonObject json_obj = json_doc.object();
-
-    saldo = QString::number(json_obj["saldo"].toDouble());
-
-    reply->deleteLater();
-    saldoManager->deleteLater();
-    nayta();
-}
-
