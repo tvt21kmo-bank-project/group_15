@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "valikko.h"
+#include "datab.h"
 
 #include <QMainWindow>
 #include <QMessageBox>
@@ -17,11 +18,12 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    void lukitseKortti();
+
+public slots:
+    void loginVastaus();
+    void tuhoaObjDatab();
 
 private slots:
-    void loginSlot(QNetworkReply *reply);
-    void lockSlot(QNetworkReply *reply);
     void on_btn_ok_clicked();
     void on_btn_1_clicked();
     void on_btn_2_clicked();
@@ -37,18 +39,12 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    QNetworkAccessManager *loginManager;
-    QNetworkAccessManager *lockManager;
-    QNetworkReply *reply;
 
+    Datab *objDatab;
     Valikko *objValikko;
     QMessageBox *msgBox;
 
     int pituus = 0;
     int vaaraPIN = 0;
-    QString kortti;
-    QString PIN;
-    QString site_url="http://localhost:3000/";
-    QString credentials="user:password";                  //tietokannan reittien tunnus ja salasana
 };
 #endif // MAINWINDOW_H

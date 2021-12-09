@@ -1,18 +1,17 @@
 #include "valikko.h"
 #include "ui_valikko.h"
 
-Valikko::Valikko(QWidget *parent, QString kortti) :
+Valikko::Valikko(QWidget *parent, Datab *objDatab) :
     QDialog(parent),
     ui(new Ui::Valikko),
-    kortti(kortti)
+    objDatab(objDatab)
 {
     ui->setupUi(this);
 
-    objDatab = new Datab();
-    objDatab->haeAsiakas(kortti);
+    objDatab->haeAsiakas();
     connect(objDatab, SIGNAL(AsiakasValmis()), this, SLOT(nayta()));
 
-    objDatab->haeTili(kortti);
+    objDatab->haeTili();
 
     timer30 = new QTimer(this);
     connect(timer30, SIGNAL(timeout()), this, SLOT(sulujeppasuluje()));
@@ -24,8 +23,8 @@ Valikko::~Valikko()
     delete ui;
     ui=nullptr;
 
-    delete objDatab;
-    objDatab = nullptr;
+    emit suljettuOn();
+
     qDebug() << "Kirjauduttu ulos";
 }
 

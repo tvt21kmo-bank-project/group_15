@@ -14,9 +14,49 @@ Datab::~Datab()
     ui = nullptr;
 }
 
-void Datab::haeAsiakas(QString kortti)
+void Datab::login(QString kortti, QString PIN)
 {
-    QNetworkRequest request((site_url +"hae_asiakas/"+kortti));
+    kortinnumero = kortti;
+
+    QJsonObject json; //luodaan JSON objekti ja lisätään data
+    json.insert("kortinnumero",kortti);
+    json.insert("PIN",PIN);
+
+    QNetworkRequest request((login_url + "login"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QByteArray data = credentials.toLocal8Bit().toBase64();
+    QString headerData = "Basic " + data;
+    request.setRawHeader( "Authorization", headerData.toLocal8Bit() );
+    loginManager = new QNetworkAccessManager(this);
+
+    connect(loginManager, SIGNAL(finished (QNetworkReply*)),
+    this, SLOT(loginSlot(QNetworkReply*)));
+
+    reply = loginManager->post(request, QJsonDocument(json).toJson());
+}
+
+void Datab::lukitseKortti()
+{
+    QJsonObject json; //luodaan JSON objekti ja lisätään data
+    json.insert("lukittuKortti",kortinnumero + "L");
+    json.insert("kortinnumero",kortinnumero);
+
+    QNetworkRequest request((login_url + "bank/lukitse_kortti"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QByteArray data = credentials.toLocal8Bit().toBase64();
+    QString headerData = "Basic " + data;
+    request.setRawHeader( "Authorization", headerData.toLocal8Bit() );
+    lockManager = new QNetworkAccessManager(this);
+
+    connect(lockManager, SIGNAL(finished (QNetworkReply*)),
+    this, SLOT(lockSlot(QNetworkReply*)));
+
+    reply = lockManager->put(request, QJsonDocument(json).toJson());
+}
+
+void Datab::haeAsiakas()
+{
+    QNetworkRequest request((site_url +"hae_asiakas/"+kortinnumero));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     QByteArray data = credentials.toLocal8Bit().toBase64();
     QString headerData = "Basic " + data;
@@ -29,10 +69,9 @@ void Datab::haeAsiakas(QString kortti)
     reply = asiakasManager->get(request);
 }
 
-void Datab::haeTili(QString kortti)
+void Datab::haeTili()
 {
-    kortinnumero = kortti;
-    QNetworkRequest request((site_url +"hae_tili/" + kortti));
+    QNetworkRequest request((site_url +"hae_tili/" + kortinnumero));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     QByteArray data = credentials.toLocal8Bit().toBase64();
     QString headerData = "Basic " + data;
@@ -114,6 +153,11 @@ void Datab::haeTapahtumat(int ed_viim)
     reply = tapahtumaManager->get(request);
 }
 
+QString Datab::palautaLoginVast()
+{
+    return loginVastaus;
+}
+
 QString Datab::palautaAsiakas()
 {
     return asiakas;
@@ -132,6 +176,34 @@ QString Datab::palautaTapah()
 QString Datab::palautaSaldo()
 {
     return saldo;
+}
+
+void Datab::loginSlot(QNetworkReply *reply)
+{
+    QByteArray response_data=reply->readAll();
+    loginVastaus = response_data;
+
+    emit LoginValmis();
+}
+
+void Datab::lockSlot(QNetworkReply *reply)
+{
+        QByteArray response_data=reply->readAll();
+        qDebug() << response_data;
+        if(response_data == "1"){
+            msgBox = new QMessageBox();
+            msgBox->setText("Liian monta yritystä. Kortti lukittu.");
+            msgBox->show();
+            msgBox->setAttribute(Qt::WA_DeleteOnClose);
+            QTimer::singleShot(10000, msgBox, SLOT(close()));
+        }
+        else {
+            msgBox = new QMessageBox();
+            msgBox->setText("Kirjautuminen epäonnistui");
+            msgBox->show();
+            msgBox->setAttribute(Qt::WA_DeleteOnClose);
+            QTimer::singleShot(10000, msgBox, SLOT(close()));
+        }
 }
 
 void Datab::getAsiakasSlot(QNetworkReply *reply)

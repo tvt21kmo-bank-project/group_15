@@ -18,7 +18,7 @@ class Valikko : public QDialog
     Q_OBJECT
 
 public:
-    explicit Valikko(QWidget *parent = nullptr, QString kortti = NULL);
+    explicit Valikko(QWidget *parent = nullptr, Datab *objDatab = nullptr);
     ~Valikko();
 
 public slots:
@@ -32,6 +32,9 @@ private slots:
     void on_btn_saldo_clicked();
     void on_btn_logout_clicked();
 
+signals:
+    void suljettuOn();
+
 private:
     Ui::Valikko *ui;
 
@@ -40,10 +43,6 @@ private:
     SelaaTapahtumia *objSelaa;
     NostaRahaa *objNosta;
     NaytaSaldo *objSaldo;
-
-    QString asiakas;
-    QString kortti;
-    QString tilinumero;
 };
 
 #endif // VALIKKO_H

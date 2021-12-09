@@ -20,19 +20,24 @@ public:
     explicit Datab(QWidget *parent = nullptr);
     ~Datab();
 
-    void haeAsiakas(QString kortti);
-    void haeTili(QString kortti);
+    void login(QString kortti, QString PIN);
+    void lukitseKortti();
+    void haeAsiakas();
+    void haeTili();
     void hae5Tapahtumaa();
     void haeSaldo();
     void debitNosto(QString maara);
     void haeTapahtumat(int ed_viim);
 
+    QString palautaLoginVast();
     QString palautaAsiakas();
     QString palautaTilinum();
     QString palautaTapah();
     QString palautaSaldo();
 
 public slots:
+    void loginSlot(QNetworkReply *reply);
+    void lockSlot(QNetworkReply *reply);
     void getAsiakasSlot (QNetworkReply *reply);
     void getTiliSlot (QNetworkReply *reply);
     void getTapahtumaSlot(QNetworkReply *reply);
@@ -40,6 +45,7 @@ public slots:
     void debitSlot(QNetworkReply *reply);
 
 signals:
+    void LoginValmis();
     void AsiakasValmis();
     void TiliValmis();
     void TapahValmis();
@@ -48,6 +54,8 @@ signals:
 private:
     Ui::Datab *ui;
 
+    QNetworkAccessManager *loginManager;
+    QNetworkAccessManager *lockManager;
     QNetworkAccessManager *asiakasManager;
     QNetworkAccessManager *tapahtumaManager;
     QNetworkAccessManager *tiliManager;
@@ -55,6 +63,7 @@ private:
     QNetworkAccessManager *debitManager;
     QNetworkReply *reply;
 
+    QString loginVastaus;
     QString asiakas;
     QString kortinnumero;
     QString tapahtuma;
@@ -63,6 +72,7 @@ private:
 
     QMessageBox *msgBox;
 
+    QString login_url="http://localhost:3000/";
     QString site_url="http://localhost:3000/bank/";
     QString credentials="user:password";                  //tietokannan reittien tunnus ja salasana
 };
