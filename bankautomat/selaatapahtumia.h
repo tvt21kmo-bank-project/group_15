@@ -18,6 +18,8 @@ public:
     ~SelaaTapahtumia();
 
 public slots:
+    void starttaaTimer();
+    void sulje();
     void nayta();
 
 private slots:
@@ -25,10 +27,13 @@ private slots:
     void on_btn_vanh_clicked();
     void on_btn_uud_clicked();
 
+signals:
+    void suljettuOn();
+
 private:
     Ui::SelaaTapahtumia *ui;
     Datab *objDatab;
-
+    QTimer *timer10;
     int ed_viim = 0;
 };
 

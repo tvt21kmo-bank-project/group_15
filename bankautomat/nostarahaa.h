@@ -19,6 +19,8 @@ public:
     ~NostaRahaa();
 
 public slots:
+    void starttaaTimer();
+    void sulje();
     void nayta();
 
 private slots:
@@ -37,6 +39,7 @@ signals:
 private:
     Ui::NostaRahaa *ui;
     Datab *objDatab;
+    QTimer *timer10;
     MuuSumma *objMuuSumma;
 };
 

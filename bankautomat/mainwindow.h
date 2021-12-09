@@ -49,6 +49,6 @@ private:
     QString kortti;
     QString PIN;
     QString site_url="http://localhost:3000/";
-    QString credentials="user:password";                  //tietokannan reittien tunnus ja salasana
+    QString credentials="joku:totta";                  //tietokannan reittien tunnus ja salasana
 };
 #endif // MAINWINDOW_H

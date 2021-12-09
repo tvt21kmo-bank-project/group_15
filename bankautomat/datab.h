@@ -64,7 +64,7 @@ private:
     QMessageBox *msgBox;
 
     QString site_url="http://localhost:3000/bank/";
-    QString credentials="user:password";                  //tietokannan reittien tunnus ja salasana
+    QString credentials="joku:totta";                  //tietokannan reittien tunnus ja salasana
 };
 
 #endif // DATAB_H

@@ -18,14 +18,20 @@ public:
     ~NaytaSaldo();
 
 public slots:
+    void starttaaTimer();
     void nayta();
+    void sulje();
 
 private slots:
     void on_btn_close_clicked();
 
+signals:
+    void suljettuOn();
+
 private:
     Ui::NaytaSaldo *ui;
     Datab *objDatab;
+    QTimer *timer10;
 };
 
 #endif // NAYTASALDO_H

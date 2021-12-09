@@ -37,6 +37,7 @@ void Valikko::nayta()
 void Valikko::starttaaTimeri()
 {
     timer30->start(30000);
+    qDebug() << "timer30 käynnistetty";
 }
 
 void Valikko::sulujeppasuluje()
@@ -50,8 +51,7 @@ void Valikko::on_btn_tapahtumat_clicked()
     objSelaa = new SelaaTapahtumia(nullptr, objDatab);
     objSelaa->setAttribute(Qt::WA_DeleteOnClose);
     objSelaa->show();
-//    objSelaa->haeTapahtumat();
-//    objSelaa->haeSaldo();
+    connect(objSelaa, SIGNAL(suljettuOn()), this, SLOT(starttaaTimeri()));
 }
 
 
@@ -70,6 +70,7 @@ void Valikko::on_btn_saldo_clicked()
     objSaldo = new NaytaSaldo(nullptr, objDatab);
     objSaldo->setAttribute(Qt::WA_DeleteOnClose);
     objSaldo->show();
+    connect(objSaldo, SIGNAL(suljettuOn()), this, SLOT(starttaaTimeri()));
 }
 
 void Valikko::on_btn_logout_clicked()

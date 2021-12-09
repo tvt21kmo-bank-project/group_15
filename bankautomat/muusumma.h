@@ -17,6 +17,10 @@ public:
     explicit MuuSumma(QWidget *parent = nullptr, Datab *datab = nullptr);
     ~MuuSumma();
 
+public slots:
+    void starttaaTimer();
+    void sulje();
+
 private slots:
     void on_btn_ok_clicked();
     void on_btn_close_clicked();
@@ -32,9 +36,13 @@ private slots:
     void on_btn_0_clicked();
     void on_btn_clear_clicked();
 
+signals:
+    void suljettuOn();
+
 private:
     Ui::MuuSumma *ui;
     Datab *objDatab;
+    QTimer *timer10;
     QMessageBox *msgBox;
 };
 
