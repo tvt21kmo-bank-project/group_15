@@ -1,30 +1,29 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef MUUSUMMA_H
+#define MUUSUMMA_H
 
-#include "valikko.h"
 #include "datab.h"
 
-#include <QMainWindow>
-#include <QMessageBox>
+#include <QDialog>
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
+namespace Ui {
+class MuuSumma;
+}
 
-class MainWindow : public QMainWindow
+class MuuSumma : public QDialog
 {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+    explicit MuuSumma(QWidget *parent = nullptr, Datab *datab = nullptr);
+    ~MuuSumma();
 
 public slots:
-    void loginVastaus();
-    void tuhoaObjDatab();
+    void starttaaTimer();
+    void sulje();
 
 private slots:
     void on_btn_ok_clicked();
+    void on_btn_close_clicked();
     void on_btn_1_clicked();
     void on_btn_2_clicked();
     void on_btn_3_clicked();
@@ -37,14 +36,14 @@ private slots:
     void on_btn_0_clicked();
     void on_btn_clear_clicked();
 
+signals:
+    void suljettuOn();
+
 private:
-    Ui::MainWindow *ui;
-
+    Ui::MuuSumma *ui;
     Datab *objDatab;
-    Valikko *objValikko;
+    QTimer *timer10;
     QMessageBox *msgBox;
-
-    int pituus = 0;
-    int vaaraPIN = 0;
 };
-#endif // MAINWINDOW_H
+
+#endif // MUUSUMMA_H
