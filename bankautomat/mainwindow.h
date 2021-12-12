@@ -21,6 +21,7 @@ public:
 
 public slots:
     void loginVastaus();
+    void tarkLukitusVastaus();
     void tuhoaObjDatab();
 
 private slots:

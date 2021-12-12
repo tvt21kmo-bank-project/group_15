@@ -42,7 +42,7 @@ void SelaaTapahtumia::sulje()
 
 void SelaaTapahtumia::nayta()
 {
-    ui->label_asiakas->setText(objDatab->palautaAsiakas());
+    ui->label_omistaja->setText(objDatab->palautaOmistaja());
     ui->te_tapahtumat->setText(objDatab->palautaTapah());
     ui->label_saldo->setText(objDatab->palautaSaldo());
 }
@@ -62,7 +62,7 @@ void SelaaTapahtumia::on_btn_vanh_clicked()
 void SelaaTapahtumia::on_btn_uud_clicked()
 {
     starttaaTimer();
-    ed_viim = ed_viim - 20;
+    ed_viim = ed_viim - 10;
     if (ed_viim < 0){
         ed_viim = 0;
     }

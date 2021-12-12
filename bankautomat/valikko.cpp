@@ -12,6 +12,7 @@ Valikko::Valikko(QWidget *parent, Datab *objDatab) :
     connect(objDatab, SIGNAL(AsiakasValmis()), this, SLOT(nayta()));
 
     objDatab->haeTili();
+    connect(objDatab, SIGNAL(TiliValmis()), this, SLOT(haeOmistaja()));
 
     timer30 = new QTimer(this);
     connect(timer30, SIGNAL(timeout()), this, SLOT(sulujeppasuluje()));
@@ -31,6 +32,11 @@ Valikko::~Valikko()
 void Valikko::nayta()
 {
     ui->label_asiakas->setText(objDatab->palautaAsiakas());
+}
+
+void Valikko::haeOmistaja()
+{
+    objDatab->haeOmistaja();
 }
 
 void Valikko::starttaaTimeri()

@@ -37,7 +37,7 @@ void NaytaSaldo::starttaaTimer()
 
 void NaytaSaldo::nayta()
 {
-    ui->label_asiakas->setText(objDatab->palautaAsiakas());
+    ui->label_omistaja->setText(objDatab->palautaOmistaja());
     ui->label_saldo->setText(objDatab->palautaSaldo());
     ui->te_tapahtumat->setText(objDatab->palautaTapah());
 }

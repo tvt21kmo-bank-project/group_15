@@ -10,6 +10,10 @@ const pankki = {
             'SELECT etunimi, sukunimi FROM Asiakas JOIN Kortti ON Asiakas.idAsiakas = Kortti.idAsiakas WHERE kortinnumero = ?',
             [kortti], cb);
     },
+    haeOmistaja: function(tili, cb) {
+        return db.query('SELECT etunimi, sukunimi FROM Asiakas a JOIN Kortti k ON a.idAsiakas = k.idAsiakas JOIN Tili t ON k.idTili = t.idTili WHERE (idOmistaja=a.idAsiakas AND tilinumero=?)',
+        [tili], cb);
+    },
     selaaTapahtumia: function(edel_viim, tili, cb) {
         return db.query('call selaa_tapahtumia(?,?)', 
         [edel_viim, tili], cb);
@@ -29,6 +33,10 @@ const pankki = {
     lukitseKortti: function (data, cb) {
         return db.query('UPDATE Kortti SET kortinnumero=? WHERE kortinnumero = ?',
         [data.lukittuKortti, data.kortinnumero], cb);
+    },
+    tarkistaLukitus: function (kortti, cb) {
+        return db.query('SELECT count(idKortti) from Kortti WHERE kortinnumero = ?',
+        [kortti], cb);
     }
 };
 

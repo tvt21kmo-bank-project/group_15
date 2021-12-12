@@ -85,6 +85,6 @@ void NostaRahaa::on_btn_close_clicked()
 
 void NostaRahaa::nayta()
 {
-    ui->label_asiakas->setText(objDatab->palautaAsiakas());
+    ui->label_omistaja->setText(objDatab->palautaOmistaja());
     ui->label_saldo->setText(objDatab->palautaSaldo());
 }

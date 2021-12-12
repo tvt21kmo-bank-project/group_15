@@ -20,15 +20,33 @@ MainWindow::~MainWindow()
 void MainWindow::loginVastaus()
 {
     QString response_data = objDatab->palautaLoginVast();
-    qDebug() << response_data;
     if(response_data == "true"){
         vaaraPIN = 0;
         objValikko = new Valikko(nullptr, objDatab);
         objValikko->setAttribute(Qt::WA_DeleteOnClose);
         objValikko->show();
+        ui->le_kortti->clear();
+        ui->le_PIN->clear();
+        pituus = 0;
         connect(objValikko, SIGNAL(suljettuOn()), this, SLOT(tuhoaObjDatab()));
     }
     else if(response_data == "false"){
+        objDatab->tarkLukitus(ui->le_kortti->text()+"L");
+        connect(objDatab, SIGNAL(TarkLukitusValmis()), this, SLOT(tarkLukitusVastaus()));
+    }
+}
+
+void MainWindow::tarkLukitusVastaus()
+{
+    QString vastaus = objDatab->palautaTarkLukitus();
+    if(vastaus == "1"){
+        msgBox = new QMessageBox();
+        msgBox->setText("Kortti on lukittu.");
+        msgBox->show();
+        msgBox->setAttribute(Qt::WA_DeleteOnClose);
+        QTimer::singleShot(10000, msgBox, SLOT(close()));
+    }
+    else if(vastaus == "0"){
         vaaraPIN++;
         if(vaaraPIN == 3){
             qDebug() << "Väärä PIN 3. kertaa";
@@ -41,7 +59,8 @@ void MainWindow::loginVastaus()
         msgBox->show();
         msgBox->setAttribute(Qt::WA_DeleteOnClose);
         QTimer::singleShot(10000, msgBox, SLOT(close()));
-    }}
+        }
+    }
     else {
         msgBox = new QMessageBox();
         msgBox->setText("Kirjautuminen epäonnistui");

@@ -8,10 +8,12 @@ const tili = {
         return db.query('select * from tili', cb);
     },
     add: function(tili, cb) {
-        return db.query('insert into tili (tilinumero, saldo) values (?,?)', [tili.tilinumero, tili.saldo], cb);
+        return db.query('insert into tili (tilinumero, saldo, idOmistaja) values (?,?,?)', 
+        [tili.tilinumero, tili.saldo, tili.idOmistaja], cb);
     },
     update: function(id, tili, cb) {
-        return db.query('update tili set tilinumero=?, saldo=? where idTili=?', [tili.tilinumero, tili.saldo, id], cb);
+        return db.query('update tili set tilinumero=?, saldo=?, idOmistaja=? where idTili=?', 
+        [tili.tilinumero, tili.saldo, tili.idOmistaja, id], cb);
     },
     delete: function(id, cb) {
         return db.query('delete from tili where idTili=?', [id], cb);

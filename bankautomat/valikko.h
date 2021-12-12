@@ -25,6 +25,7 @@ public slots:
     void starttaaTimeri();
     void sulujeppasuluje();
     void nayta();
+    void haeOmistaja();
 
 private slots:
     void on_btn_tapahtumat_clicked();

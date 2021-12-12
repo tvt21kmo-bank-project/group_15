@@ -35,13 +35,28 @@ void Datab::login(QString kortti, QString PIN)
     reply = loginManager->post(request, QJsonDocument(json).toJson());
 }
 
+void Datab::tarkLukitus(QString kortti)
+{
+    QNetworkRequest request((site_url +"tarkista_lukitus/"+kortti));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QByteArray data = credentials.toLocal8Bit().toBase64();
+    QString headerData = "Basic " + data;
+    request.setRawHeader( "Authorization", headerData.toLocal8Bit() );
+    tarkLukitusManager = new QNetworkAccessManager(this);
+
+    connect(tarkLukitusManager, SIGNAL(finished (QNetworkReply*)),
+    this, SLOT(tarkLukitusSlot(QNetworkReply*)));
+
+    reply = tarkLukitusManager->get(request);
+}
+
 void Datab::lukitseKortti()
 {
     QJsonObject json; //luodaan JSON objekti ja lisätään data
     json.insert("lukittuKortti",kortinnumero + "L");
     json.insert("kortinnumero",kortinnumero);
 
-    QNetworkRequest request((login_url + "bank/lukitse_kortti"));
+    QNetworkRequest request((site_url + "lukitse_kortti"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     QByteArray data = credentials.toLocal8Bit().toBase64();
     QString headerData = "Basic " + data;
@@ -82,6 +97,21 @@ void Datab::haeTili()
     this, SLOT(getTiliSlot(QNetworkReply*)));
 
     reply = tiliManager->get(request);
+}
+
+void Datab::haeOmistaja()
+{
+    QNetworkRequest request((site_url +"hae_omistaja/" + tilinumero));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QByteArray data = credentials.toLocal8Bit().toBase64();
+    QString headerData = "Basic " + data;
+    request.setRawHeader( "Authorization", headerData.toLocal8Bit() );
+    omistajaManager = new QNetworkAccessManager(this);
+
+    connect(omistajaManager, SIGNAL(finished (QNetworkReply*)),
+    this, SLOT(getOmistajaSlot(QNetworkReply*)));
+
+    reply = omistajaManager->get(request);
 }
 
 void Datab::hae5Tapahtumaa()
@@ -158,9 +188,19 @@ QString Datab::palautaLoginVast()
     return loginVastaus;
 }
 
+QString Datab::palautaTarkLukitus()
+{
+    return tulos;
+}
+
 QString Datab::palautaAsiakas()
 {
     return asiakas;
+}
+
+QString Datab::palautaOmistaja()
+{
+    return omistaja;
 }
 
 QString Datab::palautaTilinum()
@@ -184,6 +224,17 @@ void Datab::loginSlot(QNetworkReply *reply)
     loginVastaus = response_data;
 
     emit LoginValmis();
+}
+
+void Datab::tarkLukitusSlot(QNetworkReply *reply)
+{
+    QByteArray response_data=reply->readAll();
+    QJsonDocument json_doc = QJsonDocument::fromJson(response_data);
+    QJsonObject json_obj = json_doc.object();
+
+    tulos = QString::number(json_obj["count(idKortti)"].toInt());
+
+    emit TarkLukitusValmis();
 }
 
 void Datab::lockSlot(QNetworkReply *reply)
@@ -218,6 +269,19 @@ void Datab::getAsiakasSlot(QNetworkReply *reply)
     asiakasManager->deleteLater();
 
     emit AsiakasValmis();
+}
+
+void Datab::getOmistajaSlot(QNetworkReply *reply)
+{
+    QByteArray response_data=reply->readAll();
+    QJsonDocument json_doc = QJsonDocument::fromJson(response_data);
+    QJsonObject json_obj = json_doc.object();
+
+    omistaja = json_obj["etunimi"].toString()+" "+json_obj["sukunimi"].toString();
+
+    qDebug() << omistaja;
+    reply->deleteLater();
+    omistajaManager->deleteLater();
 }
 
 void Datab::getTiliSlot(QNetworkReply *reply)

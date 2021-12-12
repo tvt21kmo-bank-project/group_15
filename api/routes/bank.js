@@ -22,6 +22,16 @@ router.get('/hae_asiakas/:kortti', function(req, res){
         }
     })
 });
+router.get('/hae_omistaja/:tili', function(req, res){
+    pankki.haeOmistaja(req.params.tili, function(err, dbResult){
+        if(err){
+            res.json(err);
+        }
+        else {
+            res.json(dbResult[0]);
+        }
+    })
+});
 router.get('/selaa_tapahtumia/:edel_viim&:tili', function(req, res) {
     pankki.selaaTapahtumia(req.params.edel_viim, req.params.tili, 
         function(err, dbResult){
@@ -70,6 +80,16 @@ router.put('/lukitse_kortti', function(req, res) {
         }
         else {
             res.json(dbResult.affectedRows);
+        }
+    })
+});
+router.get('/tarkista_lukitus/:kortti', function(req, res) {
+    pankki.tarkistaLukitus(req.params.kortti, function(err, dbResult){
+        if(err) {
+            res.json(err);
+        }
+        else {
+            res.json(dbResult[0]);
         }
     })
 });
