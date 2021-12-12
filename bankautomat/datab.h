@@ -85,7 +85,7 @@ private:
 
     QString login_url="http://localhost:3000/";
     QString site_url="http://localhost:3000/bank/";
-    QString credentials="joku:totta";                  //tietokannan reittien tunnus ja salasana
+    QString credentials="user:password";
 };
 
 #endif // DATAB_H
