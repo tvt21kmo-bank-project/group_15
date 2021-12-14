@@ -308,9 +308,10 @@ void Datab::getTapahtumaSlot(QNetworkReply *reply)
     for (const auto &it : json_array) {
     QJsonObject json_obj = it.toObject();
     QString json_aika = json_obj["aika"].toString();
-    QDateTime dt = QDateTime::fromString(json_aika, "yyyy-MM-ddThh:mm:ss.zzzZ");
+    QDateTime dt = QDateTime::fromString(json_aika, Qt::ISODate);
+    QDateTime dt_local = dt.toLocalTime();
 
-    tapahtuma += dt.toString("dd-MM-yyyy hh:mm:ss")+"     -     "+json_obj["kortinnumero"].toString()+"        -        "
+    tapahtuma += dt_local.toString("dd-MM-yyyy hh:mm:ss")+"     -     "+json_obj["kortinnumero"].toString()+"        -        "
                  +QString::number(json_obj["summa"].toDouble())+"         -         "+json_obj["tapahtuma"].toString()+"\r";
     }
     reply->deleteLater();
